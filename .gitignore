@@ -1,0 +1,5 @@
+*.dta
+*.csv
+*.xls
+*.txt
+uprem_master.Rmd
