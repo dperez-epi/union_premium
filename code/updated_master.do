@@ -1,6 +1,3 @@
-cap log close
-capture log using updated_master.txt, text replace
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Author:		Daniel Perez
 	Title: 		updated_master.do
@@ -101,6 +98,3 @@ keep if union!=.
 list
 restore
 */
-
-capture log close
-
