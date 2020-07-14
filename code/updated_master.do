@@ -9,7 +9,7 @@ capture log using updated_master.txt, text replace
 	
 	Purpose:    Update union premium estimates
 
-    last updated:   7/2/2020 12:02 PM	
+    last updated:   7/14/2020 10:37 AM (adding union coverage by race+gender)	
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 ********* Preamble *********
@@ -21,9 +21,8 @@ global dir = "/projects/dperez/union_premium"
 global data = "${dir}/data/"
 global code = "${dir}/code/"
 
-I
 ********* Load 5-year CPS ORG sample *********
-load_epiextracts, begin(2015m5) end(2020m5) sample(ORG)
+load_epiextracts, begin(2015m6) end(2020m6) sample(ORG)
 
 *keep 16+ and employed only in may data as somehow there are unemployed union members
 keep if age >= 16
@@ -41,14 +40,14 @@ gen rndorg = round(orgwgt/60,1)
 *   -Breakdown of union coverage by gender (un/weighted)
 **************************************************************
 
-describe orgwgt union unmem uncov wbho
+describe orgwgt union unmem uncov wbhao
 
 *Tabulate union coverage by race
-tab wbho union, row column
-tab wbho union [fw=rndorg], row column
+tab wbhao union, row column
+tab wbhao union [fw=rndorg], row column
 
 *Tabulate union coverage by gender
-describe orgwgt uncov wbho
+describe orgwgt union uncov wbhao
 tab female union, row column
 tab female union [fw=rndorg], row column
 
@@ -66,6 +65,42 @@ tab educ union [fw=rndorg], row column
 *       to-64 year-old workers covered by a union contract
 **************************************************************
 
+*unweighted union share by industry
+preserve
+gcollapse (count) personid, by(mind03 union)
+list
+keep if union!=.
+reshape wide personid, i(mind03) j(union)
+rename personid0 non_union
+rename personid1 union
+list
+export excel "${data}union_unwgt.xls", firstrow(variable) replace
+restore
+
+*Weighted union share by industry
+preserve
+gcollapse (count) personid [pw=orgwgt/60], by(mind03 union)
+list
+keep if union!=.
+reshape wide personid, i(mind03) j(union)
+rename personid0 non_union
+rename personid1 union
+format union non_union %9.0f
+list
+export excel "${data}union_wgt.xls", firstrow(variable) replace
+restore
+
+**************************************************************
+* Union coverage by race and gender (un/weighted)
+**************************************************************
+
+/*Unweighted union share by over time
+preserve
+gcollapse (count) per = personid [pw=orgwgt/12], by(mind03 union wbhao)
+keep if union!=.
+list
+restore
+*/
 
 capture log close
 
