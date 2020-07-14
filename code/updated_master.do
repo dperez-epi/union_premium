@@ -48,6 +48,7 @@ foreach group in wbhao mind03 {
 	append using `shares_`group''
 }
 save ${data}shares_union.dta, replace
+save${data}shares_union.xls, replace
 
 
 
@@ -61,6 +62,7 @@ gen byte ba_greater = gradeatn >= 13 if gradeatn != .
 
 gcollapse (mean) female poc fem_or_poc assoc_greater ba_greater [pw=orgwgt], by(union)
 save ${data}dist_union.dta, replace
+save ${data}dist_union.xls, replace
 
 
 
