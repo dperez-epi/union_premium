@@ -12,9 +12,7 @@ clear all
 set more off
 
 ********* Directories *********
-global dir = "/projects/dperez/union_premium"
-global data = "${dir}/data/"
-global code = "${dir}/code/"
+global data = "../data/"
 
 ********* Load 5-year CPS ORG sample *********
 load_epiextracts, begin(2015m6) end(2020m6) sample(ORG)
