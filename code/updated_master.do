@@ -91,11 +91,11 @@ forvalues i = 1/4 {
 * unconditional
 local model1 ""
 * last time-ish
-local model2 exp_* i.female i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.division
+local model2 exp_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.division
 * with age poly instead of exp
-local model3 age_* i.female i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.division
+local model3 age_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.division
 * modification with statefips instead
-local model4 age_* i.female i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.statefips
+local model4 age_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.statefips
 
 
 postfile wagereg model b se df using ${data}wage_reg_union.dta, replace
