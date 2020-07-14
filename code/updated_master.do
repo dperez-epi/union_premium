@@ -15,7 +15,7 @@ set more off
 global data = "../data/"
 
 ********* Load 5-year CPS ORG sample *********
-load_epiextracts, begin(2015m6) end(2020m6) sample(ORG)
+load_epiextracts, begin(2015m1) end(2019m12) sample(ORG)
 
 *keep 16+ and employed only in may data as somehow there are unemployed union members
 keep if age >= 16
