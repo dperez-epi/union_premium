@@ -29,7 +29,7 @@ keep if age >= 16
 keep if lfstat == 1
 
 *add labels
-numlabel, add
+*numlabel, add
 
 *generate rounded org weight for frequency weighting
 gen rndorg = round(orgwgt/60,1)
@@ -40,14 +40,13 @@ gen rndorg = round(orgwgt/60,1)
 *   -Breakdown of union coverage by gender (un/weighted)
 **************************************************************
 
-describe orgwgt union unmem uncov wbhao
-
 *Tabulate union coverage by race
+describe orgwgt union uncov wbhao female
 tab wbhao union, row column
 tab wbhao union [fw=rndorg], row column
 
 *Tabulate union coverage by gender
-describe orgwgt union uncov wbhao
+describe orgwgt union uncov wbhao female
 tab female union, row column
 tab female union [fw=rndorg], row column
 
@@ -94,13 +93,34 @@ restore
 * Union coverage by race and gender (un/weighted)
 **************************************************************
 
-/*Unweighted union share by over time
+*Weighted union coverage by race/gender
 preserve
-gcollapse (count) per = personid [pw=orgwgt/12], by(mind03 union wbhao)
+gcollapse (count) per = personid [pw=orgwgt/60], by(union female wbhao)
 keep if union!=.
+reshape wide per, i(union wbhao) j(female)
+rename per0 m_
+rename per1 f_ 
+decode(wbhao), gen(wbhaostring)
+drop wbhao
+reshape wide m_ f_, i(union) j(wbhaostring) string
+format m_Asian m_Black m_Hispanic m_White m_Other f_White f_Black f_Hispanic f_Asian f_Other %9.0f 
 list
+export excel "${data}racegender_wgt.xls", firstrow(variable) replace
 restore
-*/
+
+*unweighted union coverage by race/gender
+preserve
+gcollapse (count) per = personid, by(union female wbhao)
+keep if union!=.
+reshape wide per, i(union wbhao) j(female)
+rename per0 m_
+rename per1 f_ 
+decode(wbhao), gen(wbhaostring)
+drop wbhao
+reshape wide m_ f_, i(union) j(wbhaostring) string
+list
+export excel "${data}racegender_unwgt.xls", firstrow(variable) replace
+restore
 
 capture log close
 
