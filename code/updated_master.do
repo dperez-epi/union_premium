@@ -5,8 +5,6 @@
 	Created by: Daniel Perez
 	
 	Purpose:    Update union premium estimates
-
-    last updated:   7/14/2020 10:37 AM (adding union coverage by race+gender)	
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 ********* Preamble *********
