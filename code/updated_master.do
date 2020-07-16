@@ -98,15 +98,35 @@ local model2 exp_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.ye
 local model3 age_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.division
 * modification with statefips instead
 local model4 age_* i.female i.wbhao i.gradeatn i.citistat i.mind03 i.mocc03 i.year i.statefips
+* modification with statefips and 5 category educ
+local model5 age_* i.female i.wbhao i.educ i.citistat i.mind03 i.mocc03 i.year i.statefips
 
 
+*Union premium regression models 1-5
 postfile wagereg model b se df using ${data}wage_reg_union.dta, replace
-forvalues i = 1/4 {
+forvalues i = 1/5 {
 	di _n(2) "working on results for model `i'"
 	di "model `i' = `model`i''"
 	qui reg logwage union `model`i'' [pw=orgwgt], robust
 	lincom union
 	post wagereg (`i') (`r(estimate)') (`r(se)') (`r(df)')
 }
+
+*Union premium regression model 4, by race
+forvalues i = 1/5{
+	di _n(2) "working on results for model 4 wbhao == `i'"
+	qui reg logwage union `model4' [pw=orgwgt] if wbhao==`i', robust
+	lincom union
+	post wagereg (`i') (`r(estimate)') (`r(se)') (`r(df)')
+}
+
+*Union premium regression model 5, by race
+forvalues i = 1/5{
+	di _n(2) "working on results for model 5 wbhao == `i'"
+	qui reg logwage union `model5' [pw=orgwgt] if wbhao==`i', robust
+	lincom union
+	post wagereg (`i') (`r(estimate)') (`r(se)') (`r(df)')
+}
+
 postclose wagereg
 
