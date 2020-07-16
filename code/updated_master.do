@@ -129,7 +129,7 @@ forvalues i = 4/5{
 postclose racereg
 
 *Union wage premium regressions by gender
-postfile gendreg model female b se df using ${data}race_reg_union.dta, replace
+postfile gendreg model female b se df using ${data}gend_reg_union.dta, replace
 forvalues i = 4/5{
 
 	forvalues j = 0/1{
