@@ -1,3 +1,5 @@
+cap log close
+capture log using updated_master.txt, text replace
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Author:		Daniel Perez
 	Title: 		updated_master.do
@@ -138,3 +140,5 @@ forvalues i = 4/5{
 	}
 }
 postclose gendreg
+
+cap log close
