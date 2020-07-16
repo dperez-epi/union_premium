@@ -121,7 +121,7 @@ forvalues i = 4/5{
 
 	forvalues j= 1/5{
 		di _n(2) "working on results for model `i' wbhao == `j'"
-		qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`i', robust
+		qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`j', robust
 		lincom union
 		post racereg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
 	}
