@@ -115,26 +115,37 @@ postclose wagereg
 
 *Union wage premium by race
 
-postfile racereg model b se df using ${data}race_reg_union.dta, replace
-*Union premium regression model 4
-forvalues i = 1/5{
-	di _n(2) "working on results for model 4 wbhao == `i'"
-	qui reg logwage union `model4' [pw=orgwgt] if wbhao==`i', robust
+postfile racereg model wbhao b se df using ${data}race_reg_union.dta, replace
+*Union premium regressions by race
+forvalues i = 4/5{
+
+	forvalues j= 1/5{
+	di _n(2) "working on results for model `i' wbhao == `j'"
+	qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`i', robust
 	lincom union
-	post racereg (`i') (`r(estimate)') (`r(se)') (`r(df)')
-}
-*Union premium regression model 5
-forvalues i = 1/5{
-	di _n(2) "working on results for model 5 wbhao == `i'"
-	qui reg logwage union `model5' [pw=orgwgt] if wbhao==`i', robust
-	lincom union
-	post racereg (`i') (`r(estimate)') (`r(se)') (`r(df)')
+	post racereg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
+	}
 }
 postclose racereg
 
+
+postfile gendreg model female b se df using ${data}race_reg_union.dta, replace
+*Union wage premium by gender
+forvalues i = 4/5{
+
+	forvalues j= 0/1{
+	di _n(2) "working on results for model `i' gender == `j'"
+	qui reg logwage union `model`i'' [pw=orgwgt] if female==`i', robust
+	lincom union
+	post racereg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
+	}
+}
+postclose gendreg
+
 *Union wage premium by gender
 
-postfile gendreg model b se df using ${data}gend_reg_union.dta, replace
+/*
+postfile gendreg female b se df using ${data}gend_reg_union.dta, replace
 *Union premium regression model 4
 forvalues i = 0/1{
 	di _n(2) "working on results for model 4 female == `i'"
@@ -150,3 +161,4 @@ forvalues i = 0/1{
 	post gendreg (`i') (`r(estimate)') (`r(se)') (`r(df)')
 }
 postclose gendreg
+*/
