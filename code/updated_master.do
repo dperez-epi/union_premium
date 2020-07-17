@@ -147,12 +147,12 @@ forvalues i = 0/1 {
 }
 postclose secreg
 
-*Union wage premium regressions by sector and  race
+*Union wage premium regressions by sector and race
 postfile secwbhao pubsec wbhao b se df using ${data}sec_race_regs.dta, replace
 forvalues i = 0/1{
 	forvalues j= 1/5{
 		di _n(2) "working on results for pubsec==`i' and wbhao == `j'"
-		qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`j' & pubsec==`i', robust
+		qui reg logwage union `model5' [pw=orgwgt] if wbhao==`j' & pubsec==`i', robust
 		lincom union
 		post secwbhao (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
 	}
@@ -162,14 +162,15 @@ postclose secwbhao
 *Union wage premium regressions by sector and gender
 postfile secfemreg pubsec female b se df using ${data}sec_gend_reg.dta, replace
 forvalues i = 0/1{
-
 	forvalues j = 0/1{
 		di _n(2) "working on results for pubsec==`i' and female == `j'"
-		qui reg logwage union `model`i'' [pw=orgwgt] if female==`j' & pubsec==`i', robust
+		qui reg logwage union `model5' [pw=orgwgt] if female==`j' & pubsec==`i', robust
 		lincom union
 		post secfemreg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
 	}
 }
+
+postclose secfemreg
 
 *Append regression datasets
 use ${data}wage_reg_union, clear
@@ -179,13 +180,11 @@ append using ${data}sector_regs.dta
 append using ${data}sec_race_regs.dta
 append using ${data}sec_gend_reg.dta
 
-
-
+*Label variables
 replace model=5 if model==.
 lab def modelnames 1 "Model 1" 2 "Model 2" 3 "Model 3" 4 "Model 4" 5 "Model 5: educ"
 label val model modelnames
 
-* race labels have disappeared, so add them back
 lab def wbhao 1 "White" 2 "Black" 3 "Hispanic" 4 "Asian" 5 "Other"
 lab val wbhao wbhao
 
@@ -194,9 +193,11 @@ label def gender 0 "Male" 1 "Female"
 label val gender gender
 
 rename pubsec sector
-label def sector 0 "Private" 1 "Public"
+label def sector 0 "Nonpublic" 1 "Public"
 label val sector sector
 
-list 
+list
+*export resulting dataset
+export excel "${data}Union_regressions.xls", firstrow(variable) replace
 
 cap log close
