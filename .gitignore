@@ -2,4 +2,6 @@
 *.csv
 *.xls
 *.txt
+*.pdf
 uprem_master.Rmd
+scratch.do

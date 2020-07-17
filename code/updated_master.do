@@ -116,29 +116,87 @@ forvalues i = 1/5 {
 postclose wagereg
 
 *Union wage premium regressions by race
-postfile racereg model wbhao b se df using ${data}race_reg_union.dta, replace
-forvalues i = 4/5{
-
+postfile racereg wbhao b se df using ${data}race_reg_union.dta, replace
 	forvalues j= 1/5{
-		di _n(2) "working on results for model `i' wbhao == `j'"
-		qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`j', robust
+		di _n(2) "working on results for for model 5, wbhao == `j'"
+		qui reg logwage union `model5' [pw=orgwgt] if wbhao==`j', robust
 		lincom union
-		post racereg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
+		post racereg (`j') (`r(estimate)') (`r(se)') (`r(df)')
 	}
-}
 postclose racereg
 
 *Union wage premium regressions by gender
-postfile gendreg model female b se df using ${data}gend_reg_union.dta, replace
-forvalues i = 4/5{
-
+postfile femreg female b se df using ${data}female_reg_union.dta, replace
 	forvalues j = 0/1{
-		di _n(2) "working on results for model `i' female == `j'"
-		qui reg logwage union `model`i'' [pw=orgwgt] if female==`j', robust
+		di _n(2) "working on results for model 5, female == `j'"
+		qui reg logwage union `model5' [pw=orgwgt] if female==`j', robust
 		lincom union
-		post gendreg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
+		post femreg (`j') (`r(estimate)') (`r(se)') (`r(df)')
+	}
+postclose femreg
+
+*Model 5 regressions by sector
+
+*Union premium regression models 5, by sector 
+postfile secreg pubsec b se df using ${data}sector_regs.dta, replace
+forvalues i = 0/1 {
+	di _n(2) "working on results for pubsec== `i'"
+	qui reg logwage union `model5' [pw=orgwgt] if pubsec==`i', robust
+	lincom union
+	post secreg (`i') (`r(estimate)') (`r(se)') (`r(df)')
+}
+postclose secreg
+
+*Union wage premium regressions by sector and  race
+postfile secwbhao pubsec wbhao b se df using ${data}sec_race_regs.dta, replace
+forvalues i = 0/1{
+	forvalues j= 1/5{
+		di _n(2) "working on results for pubsec==`i' and wbhao == `j'"
+		qui reg logwage union `model`i'' [pw=orgwgt] if wbhao==`j' & pubsec==`i', robust
+		lincom union
+		post secwbhao (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
 	}
 }
-postclose gendreg
+postclose secwbhao
+
+*Union wage premium regressions by sector and gender
+postfile secfemreg pubsec female b se df using ${data}sec_gend_reg.dta, replace
+forvalues i = 0/1{
+
+	forvalues j = 0/1{
+		di _n(2) "working on results for pubsec==`i' and female == `j'"
+		qui reg logwage union `model`i'' [pw=orgwgt] if female==`j' & pubsec==`i', robust
+		lincom union
+		post secfemreg (`i') (`j') (`r(estimate)') (`r(se)') (`r(df)')
+	}
+}
+
+*Append regression datasets
+use ${data}wage_reg_union, clear
+append using ${data}race_reg_union.dta
+append using ${data}female_reg_union.dta
+append using ${data}sector_regs.dta
+append using ${data}sec_race_regs.dta
+append using ${data}sec_gend_reg.dta
+
+
+
+replace model=5 if model==.
+lab def modelnames 1 "Model 1" 2 "Model 2" 3 "Model 3" 4 "Model 4" 5 "Model 5: educ"
+label val model modelnames
+
+* race labels have disappeared, so add them back
+lab def wbhao 1 "White" 2 "Black" 3 "Hispanic" 4 "Asian" 5 "Other"
+lab val wbhao wbhao
+
+rename female gender
+label def gender 0 "Male" 1 "Female"
+label val gender gender
+
+rename pubsec sector
+label def sector 0 "Private" 1 "Public"
+label val sector sector
+
+list 
 
 cap log close
