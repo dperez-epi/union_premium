@@ -36,23 +36,26 @@ numlabel, add
 tempfile cps 
 save `cps'
 
-
-
 * Share union by group
-foreach group in wbhao mind03 {
+foreach group in pubsec wbhao {
 	use `cps', clear
-	gcollapse (mean) union [pw=orgwgt], by(`group')
+	gcollapse (mean) union (sum) n_union=union [pw=orgwgt/60], by(`group')
+	tempfile shares_`group'
+	save `shares_`group''
+}
+*Second loop collapse by mind03, only private sector workers.
+foreach group in mind03{
+	use `cps', clear
+	gcollapse (mean) union (sum) n_union=union [pw=orgwgt/60] if pubsec!=1, by(`group')
 	tempfile shares_`group'
 	save `shares_`group''
 }
 clear
-foreach group in wbhao mind03 {
+foreach group in pubsec wbhao mind03{
 	append using `shares_`group''
 }
 save ${data}shares_union.dta, replace
-export excel "${data}shares_union.xls", firstrow(variable) replace
-
-
+export excel "${data}shares_union2.xls", firstrow(variable) replace
 
 * Distribution of union members
 use `cps', clear 
@@ -180,8 +183,10 @@ append using ${data}sector_regs.dta
 append using ${data}sec_race_regs.dta
 append using ${data}sec_gend_reg.dta
 
+
+
 *Label variables
-replace model=5 if model==.
+
 lab def modelnames 1 "Model 1" 2 "Model 2" 3 "Model 3" 4 "Model 4" 5 "Model 5: educ"
 label val model modelnames
 
